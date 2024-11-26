@@ -9,37 +9,47 @@ LDFLAGS = -shared
 SWIG_INTERFACE = example.i
 SWIG_WRAPPER = example_wrap.c
 SOURCES = getStudentInfo.c AVLTree.c
-TARGET = _example.so
-PYTHON_MODULE = example.py
+OBJECTS = $(SOURCES:.c=.o)
 
-# SWIG 命令
+# SWIG 相關設定
 SWIG = swig
 SWIG_FLAGS = -python
+SWIG_OBJECTS = $(SWIG_WRAPPER:.c=.o)
 
-# 所有目標文件
-OBJECTS = $(SOURCES:.c=.o) $(SWIG_WRAPPER:.c=.o)
+# 目標文件
+CTYPE_TARGET = example_ctype.so
+SWIG_TARGET = _example.so
+PYTHON_MODULE = example.py
 
-# 默認目標
-all: $(TARGET)
+# 默認目標：構建所有內容
+all: $(CTYPE_TARGET) $(SWIG_TARGET)
 
-# 生成 SWIG 包裝器
+# C 類型目標的構建規則
+$(CTYPE_TARGET): $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+# SWIG 包裝器生成
 $(SWIG_WRAPPER): $(SWIG_INTERFACE)
 	$(SWIG) $(SWIG_FLAGS) $<
 
-# 編譯目標共享庫
-$(TARGET): $(SWIG_WRAPPER) $(SOURCES)
+# SWIG 目標的構建規則
+$(SWIG_TARGET): $(SWIG_WRAPPER) $(OBJECTS)
 	$(CC) $(CFLAGS) -I$(PYTHON_INCLUDE) $(LDFLAGS) $^ -o $@
 
-# 清理生成的文件
-clean:
-	rm -f $(TARGET) $(SWIG_WRAPPER) $(PYTHON_MODULE) *.o
+# 通用目標文件編譯規則
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
 
-# 重新編譯一切
+# 清理規則
+clean:
+	rm -f $(CTYPE_TARGET) $(SWIG_TARGET) $(SWIG_WRAPPER) $(PYTHON_MODULE) *.o
+
+# 重新編譯
 rebuild: clean all
 
-# 測試目標（可選）
-test: all
-	python3 test.py
-
 # .PHONY 表示這些目標不是文件
-.PHONY: all clean rebuild test
+.PHONY: all clean rebuild test ctype swig
+
+# 額外的便利目標
+ctype: $(CTYPE_TARGET)
+swig: $(SWIG_TARGET)
