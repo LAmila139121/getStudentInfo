@@ -77,7 +77,7 @@
         Py_INCREF(Py_None);
         $result = Py_None;
     } else {
-        // 創建字典來存儲學生數據
+        // 創建dictionary來存儲學生數據
         PyObject *student_dict = PyDict_New();
         
         PyDict_SetItemString(student_dict, "id", PyLong_FromLong($1->id));
