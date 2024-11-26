@@ -126,7 +126,7 @@ def get_all() -> List[Student]:
 def set_all(students: List[Student]) -> bool:
     try:
         # 創建一個 C 的指針陣列
-        arr_type = POINTER(StudentStruct) * (len(students) + 1)  # +1 for NULL terminator
+        arr_type = POINTER(StudentStruct) * (len(students) + 1) 
         student_array = arr_type()
         
         # 轉換每個學生並存入陣列
