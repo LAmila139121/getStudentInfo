@@ -18,19 +18,15 @@ int init() {
             return ERR_OUT_OF_MEM;
         }
         student->name = malloc(sizeof(char) * MAX_NAME_LENGTH);
-        if(!student->name) {
-            free(student);
-            fclose(fp);
-            return ERR_OUT_OF_MEM;
-        }
         student->scores = malloc(sizeof(int) * SUBJECTS_NUM);
-        if(!student->scores) {
-            free(student->name);
-            free(student);
-            fclose(fp);
-            return ERR_OUT_OF_MEM;
-        }
-
+    	if (!student->name || !student->scores) {
+        	if (student->name) free(student->name);
+        	if (student->scores) free(student->scores);
+        	free(student);
+			fclose(fp);
+        	return ERR_OUT_OF_MEM;
+    	}
+       
         if (fscanf(fp, "%d %s", &student->id, student->name) != 2) {
             break;
         }
@@ -44,7 +40,6 @@ int init() {
     }
     fclose(fp);
     return SUCCESS;
-
 }
 
 void release() {
@@ -89,8 +84,7 @@ int setById(int id, Student *student) {
     if(!new_student) {
         return ERR_OUT_OF_MEM;
     }
-    if (!new_student) return ERR_OUT_OF_MEM;
-    
+       
     new_student->id = id;
     new_student->name = strdup(student->name);
     new_student->scores = malloc(sizeof(int) * SUBJECTS_NUM); 
@@ -119,7 +113,6 @@ Student **getAll() {
 
     size_t index = 0;
     inorder_get(root, all_students, &index);
-    // 確保陣列以 NULL 結尾
     all_students[index] = NULL;
     
     return all_students;
@@ -137,6 +130,8 @@ int setAll(Student **students) {
 
     Node *old_root = root;
     root = NULL;
+	size_t new_student_count = 0;
+
     
     for (int i = 0; students[i] != NULL; i++) {
         fprintf(fp, "%d %s",students[i]->id, students[i]->name);
@@ -148,35 +143,31 @@ int setAll(Student **students) {
         if (!new_student) {
             free_tree(root);
             root = old_root;
+			fclose(fp);
             return ERR_OUT_OF_MEM;
         }
         
         new_student->id = students[i]->id;
-        
-        new_student->name = (char *)malloc(MAX_NAME_LENGTH * sizeof(char));
+        new_student->name = strdup(students[i]->name);
         new_student->scores = (int *)malloc(SUBJECTS_NUM * sizeof(int));     
         if (!new_student->name || !new_student->scores) {
             if (new_student->name) free(new_student->name);
             if (new_student->scores) free(new_student->scores);
             free(new_student);
-            root = old_root;            
+            root = old_root;
+			fclose(fp);            
             return ERR_OUT_OF_MEM;
         }   
 
-        strncpy(new_student->name, students[i]->name, MAX_NAME_LENGTH - 1);
-        new_student->name[MAX_NAME_LENGTH - 1] = '\0';
-
         memcpy(new_student->scores, students[i]->scores, SUBJECTS_NUM * sizeof(int));
-        root = insert_node(root, new_student, &student_count);
-        student_count++;
+        root = insert_node(root, new_student, &new_student_count);
+        new_student_count++;
     }
     
     if (old_root) {
         free_tree(old_root);
     }
-    
+    student_count = new_student_count;
     fclose(fp);
     return SUCCESS;
 }
-
-
