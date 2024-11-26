@@ -20,19 +20,18 @@ class Student:
 
 # 初始化
 if example.init() != 1:
-    print("初始化失敗")
+    print("init failed")
     exit(1)
 
 try:
     student_data = example.getById(2)
     if student_data is not None:
         student = Student.from_dict(student_data)
-        print(f"找到學生：")
         print(f"ID: {student.id}")
         print(f"Name: {student.name}")
         print(f"Scores: {student.scores}")
     else:
-        print("找不到學生")
+        print("Not Found")
     
     # 使用 setById
     new_student = Student(
@@ -42,30 +41,29 @@ try:
     )
     status = example.setById(6, new_student)
     if status == 1:
-        print("更新成功")
+        print("set success\n")
     else:
-        print("更新失敗")
+        print("set failed\n")
 
-    student_data2 = example.getById(4)
+    student_data2 = example.getById(6)
     if student_data2 is not None:
         student = Student.from_dict(student_data2)
-        print(f"找到學生：")
         print(f"ID: {student.id}")
         print(f"Name: {student.name}")
         print(f"Scores: {student.scores}")
     else:
-        print("找不到學生")
+        print("Not Found\n")
 
-#    students_table = [
-#        Student(1, "John", [85, 90, 88, 92, 87, 85, 89, 91, 90, 88]),
-#        Student(2, "Alice", [90, 92, 88, 85, 87, 89, 91, 86, 88, 90]),
-#        Student(3, "Bob", [88, 85, 90, 87, 89, 92, 86, 88, 90, 91])
-#    ]
-#    status = example.setAll(students_table)
-#    if status == 1:
-#        print("成功設置所有學生數據")
-#    else:
-#        print("設置失敗")
+    students_table = [
+        Student(1, "John", [85, 90, 88, 92, 87, 85, 89, 91, 90, 88]),
+        Student(2, "Alice", [90, 92, 88, 85, 87, 89, 91, 86, 88, 90]),
+        Student(3, "Bob", [88, 85, 90, 87, 89, 92, 86, 88, 90, 91])
+    ]
+    status = example.setAll(students_table)
+    if status == 1:
+        print("set all success\n")
+    else:
+        print("set all failed\n")
 
     students_data = example.getAll()
     
