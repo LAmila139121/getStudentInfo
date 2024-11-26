@@ -23,5 +23,4 @@ Node* query_node(Node *node, int id);
 void free_tree(Node *node);
 void inorder_get(Node *node, Student **students, size_t *index);
 void inorder_set(Node *node, FILE *fp);
-//void inorder_print(Node *node);
 
