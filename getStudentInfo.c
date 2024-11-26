@@ -143,7 +143,7 @@ int setAll(Student **students) {
         if (!new_student) {
             free_tree(root);
             root = old_root;
-			fclose(fp);
+	    fclose(fp);
             return ERR_OUT_OF_MEM;
         }
         
@@ -155,7 +155,7 @@ int setAll(Student **students) {
             if (new_student->scores) free(new_student->scores);
             free(new_student);
             root = old_root;
-			fclose(fp);            
+	    fclose(fp);            
             return ERR_OUT_OF_MEM;
         }   
 
