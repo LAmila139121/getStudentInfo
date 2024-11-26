@@ -1,10 +1,12 @@
 # getStudentInfo
+<br>
 
 ## 檔案說明
 此專案有7個檔案：
 ### AVLTree.h、AVLTree.c
 定義資料結構，有插入、更新、遍歷功能的AVL樹程式碼
 
+<br>
 
 ### getStudentInfo.h、getStudentInfo.c
 此作業的主要程式碼，共有6個function：
@@ -24,9 +26,12 @@ typedef struct Student{
 } Student;
 ```
 
+<br>
+
 ### example.i
 接口檔案，供後續編譯動態連結庫使用
 
+<br>
 
 ### Makefile
 使用說明：
@@ -49,28 +54,36 @@ make ctypes
 make clean
 ```
 
+<br>
+
 ### swig_test.py
 使用SWIG所編譯的動態連結庫編寫成的測試程式
 
+<br>
 
 ### ctype_test.py
 直接編譯動態連結庫，並配合Python的module `ctypes`的測試程式
 
+<br>
+<br>
+
 ## SWIG vs Ctypes (C to Python)
 
-# 性能測試
-測試分別呼叫同一個函式(getById and setById)100000次  
+### 性能測試
+測試分別呼叫同一個函式(`getById()` and `setById()`) 100000次  
 分別測試5次求平均:   
 | Function | SWIG | CTypes |
 |----------|------|--------|
-| setById() | 0.149 s | 0.118 s |
-| getById() | 0.335 s | 0.438 s |
+| `setById()` | 0.149 s | 0.118 s |
+| `getById()` | 0.335 s | 0.438 s |
 
 
 ctypes用時是swig的兩倍以上  
 → swig比起ctypes有進行函式的優化
 
-## 記憶體用量
+<br>
+
+### 記憶體用量
 
 利用此函式獲取內存中實際佔用的空間	 
 
@@ -88,6 +101,9 @@ def get_memory():
 swig比ctypes少  
 → swig比起ctypes有較好的內存管理
 
+<br>
+<br>
+
 ## 兩者操作差異
 
 ### SWIG
@@ -98,12 +114,15 @@ swig比ctypes少
 ### CTypes
 - 是Python標準庫的module，直接import就可以用
 - 無須編譯，直接可以用CDLL()函式後進行調用
-- ctypes有提供基本的類別(ex: c_int, c_char…)供映射使用，轉換複雜度沒有SWIG複雜
-- 複雜的資料結構還是需要另外處理
+- ctypes有提供基本的類別(ex: c_int, c_char…)供映射使用，轉換沒有SWIG複雜，但複雜的資料結構還是需要另外處理
+- 比較仰賴C回傳值來檢查錯誤
+
+
+<br>
 
 ## 結論
-SWIG適合用在大型和資料結構複雜的程式專案，由於可以支援多程式語言的轉換，多語言環境也比較適合   
-Ctypes適合不需要複雜的資料結構，簡單的函數調用的小專案
+**SWIG** 適合需要多次呼叫函式的狀況，或用在大型和資料結構複雜的程式專案，由於可以支援多程式語言的轉換，多語言環境也比較適合使用   
+**Ctypes** 適合不需要複雜的資料結構，簡單的函數調用的小專案
 
 
 
