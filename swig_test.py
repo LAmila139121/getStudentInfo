@@ -24,6 +24,7 @@ if example.init() != 1:
     exit(1)
 
 try:
+    # 使用 getById
     student_data = example.getById(2)
     if student_data is not None:
         student = Student.from_dict(student_data)
@@ -45,6 +46,7 @@ try:
     else:
         print("set failed\n")
 
+    # 再使用 getById 看有沒有存成功
     student_data2 = example.getById(6)
     if student_data2 is not None:
         student = Student.from_dict(student_data2)
@@ -59,18 +61,18 @@ try:
         Student(2, "Alice", [90, 92, 88, 85, 87, 89, 91, 86, 88, 90]),
         Student(3, "Bob", [88, 85, 90, 87, 89, 92, 86, 88, 90, 91])
     ]
+    # 使用 setAll
     status = example.setAll(students_table)
     if status == 1:
         print("set all success\n")
     else:
         print("set all failed\n")
-
+    # 使用 getAll
     students_data = example.getAll()
     
     # 將字典數據轉換為 Student 物件
     students = [Student.from_dict(data) for data in students_data]
     
-    # 顯示數據
     for student in students:
         print(f"ID: {student.id}")
         print(f"Name: {student.name}")
