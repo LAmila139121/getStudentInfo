@@ -95,8 +95,6 @@ def get_by_id(student_id: int) -> Optional[Student]:
         return Student.from_struct(result.contents)
     except Exception as e:
         print(f"Error converting struct: {e}")
-        print(f"Debug info - student_id: {student_id}")
-        print(f"Debug info - result: {result}")
         return None
 
 def set_by_id(student_id: int, student: Student) -> bool:
