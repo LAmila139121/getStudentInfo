@@ -2,7 +2,7 @@
 <br>
 
 ## 檔案說明
-此專案有7個檔案：
+
 ### AVLTree.h、AVLTree.c
 定義資料結構，有插入、更新、遍歷功能的AVL樹程式碼
 
@@ -16,15 +16,6 @@
 - `int setById(int id, Student* data)`: 使用ID設置單一學生資料
 - `Student** getAll()`: 獲取全部學生資料
 - `int setAll(Student** students)`: 設置全部學生資料(此函式會一併更新檔案)
-
-Student的結構
-```c
-typedef struct Student{
-    int id;          // Student ID
-    char* name;      // Student name
-    int* scores;     // Array of student scores
-} Student;
-```
 
 <br>
 
@@ -57,12 +48,12 @@ make clean
 <br>
 
 ### swig_test.py
-使用SWIG所編譯的動態連結庫編寫成的測試程式
+使用SWIG所編譯的`.so`編寫成的測試程式
 
 <br>
 
 ### ctype_test.py
-直接編譯動態連結庫，並配合Python的module `ctypes`的測試程式
+直接編譯`.so`，並配合Python的module `ctypes`的測試程式
 
 <br>
 <br>
@@ -76,10 +67,7 @@ make clean
 |----------|------|--------|
 | `setById()` | 0.149 s | 0.118 s |
 | `getById()` | 0.335 s | 0.438 s |
-
-
-ctypes用時是swig的兩倍以上  
-→ swig比起ctypes有進行函式的優化
+ 
 
 <br>
 
@@ -98,24 +86,30 @@ def get_memory():
 | 0.646 MB | 2.198 MB |
 
 
-swig比ctypes少  
-→ swig比起ctypes有較好的內存管理
-
 <br>
+
+## 性能差異原因
+|      | SWIG | CTypes |
+|------|------|--------|
+|wrap    |在編譯時就建立了 Python 和 C 之間的綁定|在運行時動態載入和綁定函數，需要額外的運行時開銷|
+|type轉換|在編譯時就會完成類型轉換的邏輯，通過 typemap 機制優化轉換過程|每次調用都需要在運行時進行類型轉換|
+|記憶體管理|提供優化的管理機制，減少記憶體分配和釋放的開銷|需要在每次調用時處理記憶體分配，可能導致更多的記憶體操作|
+|優化|可以利用 C/C++ 編譯器的優化功能，生成針對特定平台的高效代碼|因為是動態加載的，無法充分利用編譯器的優化|
+
 <br>
 
 ## 兩者操作差異
 
 ### SWIG
-- 需要寫.i檔並進行編譯，會自動產生wrap的code，用typemap去進行C和Python間的型別轉換
-- 除了C語言外，也支援其他程式語言的轉換
+- 需要寫`.i`檔並進行編譯，會自動產生 wrap 的 code，用`typemap`去進行 C 和 Python 間的型別轉換
+- 除了 C 語言外，也支援其他程式語言的轉換
 - 可以將 C 的異常和錯誤轉換為相應的 Python 異常
 
 ### CTypes
-- 是Python標準庫的module，直接import就可以用
-- 無須編譯，直接可以用CDLL()函式後進行調用
-- ctypes有提供基本的類別(ex: c_int, c_char…)供映射使用，轉換沒有SWIG複雜，但複雜的資料結構還是需要另外處理
-- 比較仰賴C回傳值來檢查錯誤
+- 是 Python 標準庫的 module，直接 import 就可以用
+- 無須編譯，直接可以用`CDLL()`函式後進行調用
+- ctypes 有提供基本的類別(ex: `c_int`, `c_char`…)供映射使用，轉換沒有 SWIG 複雜，但複雜的資料結構還是需要另外處理
+- 比較仰賴 C 回傳值來檢查錯誤
 
 
 <br>
