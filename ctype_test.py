@@ -30,6 +30,7 @@ class Student:
     scores: List[int]
 
     @classmethod
+    # C的struct轉成class
     def from_struct(cls, struct: StudentStruct) -> Optional['Student']:
         if not struct:
             return None
@@ -45,7 +46,7 @@ class Student:
             name=name,
             scores=scores
         )
-
+    # 從class轉成C的struct
     def to_struct(self) -> StudentStruct:
         struct = StudentStruct()
         struct.id = self.id
