@@ -62,11 +62,12 @@ make clean
 
 ### 性能測試
 測試分別呼叫同一個函式(`getById()` and `setById()`) 100000次  
+(有放上測試程式speed_test.py)
 分別測試5次求平均:   
 | Function | SWIG | CTypes |
 |----------|------|--------|
-| `setById()` | 0.149 s | 0.335 s |
-| `getById()` | 0.118 s | 0.438 s |
+| `setById()` | 0.095 s | 0.292 s |
+| `getById()` | 0.142 s | 0.454 s |
  
 
 <br>
