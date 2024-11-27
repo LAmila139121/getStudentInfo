@@ -17,7 +17,6 @@
     PyObject *name_attr = PyObject_GetAttrString($input, "name");
 
     if (!name_attr) {
-        free($1);
         SWIG_exception_fail(SWIG_TypeError, "Without 'name' attribute");
     }    
     const char* name = PyUnicode_AsUTF8(name_attr);
