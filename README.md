@@ -65,8 +65,8 @@ make clean
 分別測試5次求平均:   
 | Function | SWIG | CTypes |
 |----------|------|--------|
-| `setById()` | 0.149 s | 0.118 s |
-| `getById()` | 0.335 s | 0.438 s |
+| `setById()` | 0.149 s | 0.335 s |
+| `getById()` | 0.118 s | 0.438 s |
  
 
 <br>
