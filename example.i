@@ -12,24 +12,25 @@
 
 /* 為 setById 的 Student* 參數添加 typemap */
 %typemap(in) Student *data {
-
     // 獲取 name
     PyObject *name_attr = PyObject_GetAttrString($input, "name");
-
     if (!name_attr) {
         SWIG_exception_fail(SWIG_TypeError, "Without 'name' attribute");
-    }    
+    }
     const char* name = PyUnicode_AsUTF8(name_attr);
-    Py_DECREF(name_attr);
-
+    if (!name) {
+        Py_DECREF(name_attr);
+        SWIG_exception_fail(SWIG_TypeError, "Invalid name string");
+    }
+    
     // 獲取 scores
     PyObject *scores_attr = PyObject_GetAttrString($input, "scores");
     if (!scores_attr) {
-        Py_DECREF(scores_attr);
+        Py_DECREF(name_attr);
         SWIG_exception_fail(SWIG_TypeError, "Without 'scores' attribute");
     }
-    
     if (!PyList_Check(scores_attr) || PyList_Size(scores_attr) != SUBJECTS_NUM) {
+        Py_DECREF(name_attr);
         Py_DECREF(scores_attr);
         SWIG_exception_fail(SWIG_ValueError, "Not a 10 scores list");
     }
@@ -37,6 +38,7 @@
     // 創建結構體並分配內存
     $1 = (Student *)malloc(sizeof(Student));
     if (!$1) {
+        Py_DECREF(name_attr);
         Py_DECREF(scores_attr);
         SWIG_exception_fail(SWIG_MemoryError, "Failed to allocate memory");
     }
@@ -45,19 +47,39 @@
     $1->name = strdup(name);
     $1->scores = (int *)malloc(sizeof(int) * SUBJECTS_NUM);
     if (!$1->name || !$1->scores) {
-        if($1->name)    free($1->name);
-        if($1->scores)  free($1->scores);
+        if ($1->name) free($1->name);
+        if ($1->scores) free($1->scores);
         free($1);
+        Py_DECREF(name_attr);
         Py_DECREF(scores_attr);
         SWIG_exception_fail(SWIG_MemoryError, "Failed to allocate memory");
     }
     
+    // 複製分數
     for (int i = 0; i < SUBJECTS_NUM; i++) {
-        PyObject *score = PyList_GetItem(scores_attr, i);
-        $1->scores[i] = PyLong_AsLong(score);
+        PyObject *score = PyList_GetItem(scores_attr, i);  // Borrowed reference
+        if (!score) {
+            free($1->name);
+            free($1->scores);
+            free($1);
+            Py_DECREF(name_attr);
+            Py_DECREF(scores_attr);
+            SWIG_exception_fail(SWIG_TypeError, "Failed to get score");
+        }
+        
+        long value = PyLong_AsLong(score);
+        if (value == -1 && PyErr_Occurred()) {
+            free($1->name);
+            free($1->scores);
+            free($1);
+            Py_DECREF(name_attr);
+            Py_DECREF(scores_attr);
+            SWIG_exception_fail(SWIG_TypeError, "Invalid score value");
+        }
+        $1->scores[i] = (int)value;
     }
     
-    // 釋放 Python 對象的引用
+    // 釋放 Python 對象的引用，只需要一次
     Py_DECREF(name_attr);
     Py_DECREF(scores_attr);
 }
@@ -76,7 +98,7 @@
         Py_INCREF(Py_None);
         $result = Py_None;
     } else {
-        // 創建dictionary來存儲學生數據
+        // 創建字典來存儲學生數據
         PyObject *student_dict = PyDict_New();
         
         PyDict_SetItemString(student_dict, "id", PyLong_FromLong($1->id));
